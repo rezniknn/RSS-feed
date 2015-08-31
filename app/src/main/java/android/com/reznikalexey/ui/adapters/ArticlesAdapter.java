@@ -2,13 +2,13 @@ package android.com.reznikalexey.ui.adapters;
 
 import android.com.reznikalexey.R;
 import android.com.reznikalexey.model.ArticleEntry;
-import android.com.reznikalexey.utils.BitmapUtils;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -41,18 +41,36 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
             TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
             ImageView ivImage = (ImageView) view.findViewById(R.id.iv_image);
             TextView tvDescription = (TextView) view.findViewById(R.id.tv_description);
+            ProgressBar rlLoadingPanel = (ProgressBar) view.findViewById(R.id.pb_loadingPanel);
+            TextView tvSource = (TextView) view.findViewById(R.id.tv_source);
 
             if (tvTitle != null) {
                 tvTitle.setText(entry.getTitle());
             }
 
             if (ivImage != null) {
-                //TODO Load image in the background. Make asynctask and create a callback
+                if (entry.getImageBitmap() != null) {
+                    ivImage.setImageBitmap(entry.getImageBitmap());
+                    rlLoadingPanel.setVisibility(View.GONE);
+                } else {
+                    ivImage.setImageResource(R.drawable.img_placeholder);
+                    rlLoadingPanel.setVisibility(View.VISIBLE);
+                }
             }
 
             if (tvDescription != null) {
                 tvDescription.setText(entry.getDescription());
+                if (entry.isDetailedView()) {
+                    tvDescription.setVisibility(View.VISIBLE);
+                } else {
+                    tvDescription.setVisibility(View.GONE);
+                }
             }
+
+            if (tvSource != null) {
+                tvSource.setText(entry.getSource().toString());
+            }
+
         }
 
         return view;
