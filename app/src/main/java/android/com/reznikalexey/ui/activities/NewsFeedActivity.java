@@ -19,43 +19,29 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
 
     private SwipeRefreshLayout srlContainer;
     private ListView lvContainer;
+    private ArticlesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_feed);
         initViews();
+        onRefresh();
     }
 
     private void initViews() {
         srlContainer = (SwipeRefreshLayout) findViewById(R.id.srl_main_container);
         srlContainer.setOnRefreshListener(this);
         lvContainer = (ListView) findViewById(R.id.lv_container);
-        ArticlesAdapter adapter = new ArticlesAdapter(this, R.layout.article_entry_layout);
+        adapter = new ArticlesAdapter(this, R.layout.article_entry_layout);
         lvContainer.setAdapter(adapter);
         lvContainer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView tvDescription = (TextView) view.findViewById(R.id.tv_description);
-                if (tvDescription != null) {
-                    if (tvDescription.getVisibility() == View.VISIBLE) {
-                        tvDescription.setVisibility(View.GONE);
-                    } else {
-                        tvDescription.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    Log.e(LOG_TAG, "Failed to find Article Description view");
-                }
+                adapter.getItem(position).switchDetailedView();
+                adapter.notifyDataSetChanged();
             }
         });
-        ArticleEntry dummyEntry = new ArticleEntry(
-                ArticleEntry.ArticleSource.LENTA,
-                "Dummy article", "Dummy description",
-                "http://icdn.lenta.ru/images/2015/08/31/14/20150831144500846/pic_2d8e8828351bc14c4e89fe083f03a918.jpg");
-        for (int i=0; i<5; i++) {
-            adapter.add(dummyEntry);
-            dummyEntry.loadImage(adapter);
-        }
     }
 
     @Override
@@ -82,7 +68,21 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        //TODO refresh logic
+        if (adapter != null) {
+            adapter.clear();
+
+            for (int i = 0; i < 5; i++) {
+                ArticleEntry dummyEntry = new ArticleEntry(
+                        ArticleEntry.ArticleSource.LENTA,
+                        "Dummy article", "Dummy description",
+                        "http://lorempixel.com/1028/720/");
+                adapter.add(dummyEntry);
+                dummyEntry.loadImage(adapter);
+            }
+        } else {
+            Log.e(LOG_TAG, "Adapter is null");
+        }
+
         srlContainer.setRefreshing(false);
     }
 }

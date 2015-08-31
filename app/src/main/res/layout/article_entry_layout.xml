@@ -8,27 +8,25 @@
         android:id="@+id/tv_title"
         style="@style/title"/>
 
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv_image"
-        style="@style/image"/>
-
-    <RelativeLayout
-        android:id="@+id/rl_loadingPanel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" >
+        <ImageView
+            android:id="@+id/iv_image"
+            style="@style/image"/>
 
         <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true" />
-    </RelativeLayout>
+            android:id="@+id/pb_loadingPanel"
+            style="@style/progress_bar" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
         style="@style/description"/>
+
+    <TextView
+        android:id="@+id/tv_source"
+        style="@style/source"
+    />
 </LinearLayout>

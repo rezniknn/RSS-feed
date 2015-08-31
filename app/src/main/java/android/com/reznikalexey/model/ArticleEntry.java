@@ -18,6 +18,7 @@ public class ArticleEntry {
     private String imageUrl;
     private Bitmap imageBitmap;
 
+    private boolean detailedView;
     private ArticlesAdapter adapter;
 
     public enum ArticleSource {
@@ -40,6 +41,8 @@ public class ArticleEntry {
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.detailedView = false;
+
     }
 
     public ArticleSource getSource() {
@@ -88,6 +91,18 @@ public class ArticleEntry {
 
     public void setAdapter(ArticlesAdapter adapter) {
         this.adapter = adapter;
+    }
+
+    public boolean isDetailedView() {
+        return detailedView;
+    }
+
+    public void switchDetailedView() {
+        if (detailedView) {
+            detailedView = false;
+        } else {
+            detailedView = true;
+        }
     }
 
     public void loadImage(ArticlesAdapter adapter) {
