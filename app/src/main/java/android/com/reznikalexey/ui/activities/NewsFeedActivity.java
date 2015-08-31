@@ -52,8 +52,9 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
                 ArticleEntry.ArticleSource.LENTA,
                 "Dummy article", "Dummy description",
                 "http://icdn.lenta.ru/images/2015/08/31/14/20150831144500846/pic_2d8e8828351bc14c4e89fe083f03a918.jpg");
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<5; i++) {
             adapter.add(dummyEntry);
+            dummyEntry.loadImage(adapter);
         }
     }
 

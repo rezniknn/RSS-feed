@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -41,13 +42,18 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
             TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
             ImageView ivImage = (ImageView) view.findViewById(R.id.iv_image);
             TextView tvDescription = (TextView) view.findViewById(R.id.tv_description);
+            RelativeLayout rlLoadingPanel = (RelativeLayout)view.findViewById(R.id.rl_loadingPanel);
 
             if (tvTitle != null) {
                 tvTitle.setText(entry.getTitle());
             }
 
             if (ivImage != null) {
-                //TODO Load image in the background. Make asynctask and create a callback
+                ivImage.setImageBitmap(entry.getImageBitmap());
+                rlLoadingPanel.setVisibility(View.GONE);
+            } else {
+                ivImage.setImageResource(R.drawable.img_placeholder);
+                rlLoadingPanel.setVisibility(View.VISIBLE);
             }
 
             if (tvDescription != null) {
