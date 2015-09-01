@@ -11,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,6 +46,7 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
             TextView tvDescription = (TextView) view.findViewById(R.id.tv_description);
             ProgressBar rlLoadingPanel = (ProgressBar) view.findViewById(R.id.pb_loadingPanel);
             TextView tvSource = (TextView) view.findViewById(R.id.tv_source);
+            TextView tvDate = (TextView) view.findViewById(R.id.tv_date);
 
             if (tvTitle != null) {
                 tvTitle.setText(entry.getTitle());
@@ -53,8 +57,11 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
                     ivImage.setImageBitmap(entry.getImageBitmap());
                     rlLoadingPanel.setVisibility(View.GONE);
                 } else {
-                    ivImage.setImageResource(R.drawable.img_placeholder);
-                    rlLoadingPanel.setVisibility(View.VISIBLE);
+                    //ImageUrl is not null => picture must be loading at the moment
+                    if (entry.getImageUrl() != null) {
+                        ivImage.setImageResource(R.drawable.img_placeholder);
+                        rlLoadingPanel.setVisibility(View.VISIBLE);
+                    }
                 }
             }
 
@@ -69,6 +76,19 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
 
             if (tvSource != null) {
                 tvSource.setText(entry.getSource().toString());
+            }
+
+            if (tvDate != null) {
+                try {
+                    String dateString = entry.getDate();
+                    SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+                    Date date = format.parse(dateString);
+
+                    SimpleDateFormat newFormat = new SimpleDateFormat("HH:mm");
+                    tvDate.setText(newFormat.format(date));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
         }
