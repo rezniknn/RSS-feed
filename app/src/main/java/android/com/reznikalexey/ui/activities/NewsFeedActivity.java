@@ -31,7 +31,7 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
         setContentView(R.layout.activity_news_feed);
         initViews();
 
-        //Get list of sources URLs from res file
+        //Get the list of URLs from res file
         newsSources = getResources().getStringArray(R.array.array_sources_urls);
 
         //Refresh News Feed upon app launch
@@ -91,7 +91,7 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
     }
 
     /***
-     * Called when all the articles from all sources have been loaded, parsed and sorted
+     * The callback is triggered when all the articles from all sources have been loaded, parsed and sorted
      * @param articleEntries ArrayList containing news articles from all sources
      */
     @Override
@@ -100,6 +100,7 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
             adapter.clear();
             for (ArticleEntry entry : articleEntries) {
                 adapter.add(entry);
+                //Initiate image download if imageUrl is present for each news article
                 entry.loadImage(adapter);
             }
             adapter.notifyDataSetChanged();

@@ -4,29 +4,57 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_title"
-        style="@style/title"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left">
 
-        <ImageView
-            android:id="@+id/iv_image"
-            style="@style/image"/>
+            <ImageView
+                android:id="@+id/iv_image"
+                style="@style/image"
+                android:layout_weight="2" />
 
-        <ProgressBar
-            android:id="@+id/pb_loadingPanel"
-            style="@style/progress_bar" />
-    </FrameLayout>
+            <ProgressBar
+                android:id="@+id/pb_loadingPanel"
+                style="@style/progress_bar"/>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/title"
+            android:layout_alignEnd="@+id/iv_image"
+            android:layout_alignRight="@+id/iv_image"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_description"
-        style="@style/description"/>
+        style="@style/description" />
 
-    <TextView
-        android:id="@+id/tv_source"
-        style="@style/source"
-    />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="right">
+
+        <TextView
+            style="@style/source"
+            android:text="@string/source"/>
+
+        <TextView
+            android:id="@+id/tv_source"
+            style="@style/source" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            style="@style/date" />
+
+    </LinearLayout>
+
 </LinearLayout>

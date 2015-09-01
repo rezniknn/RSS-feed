@@ -2,10 +2,10 @@ package android.com.reznikalexey.model;
 
 import android.util.Log;
 
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.CharacterData;
-import org.w3c.dom.Element;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -38,6 +38,8 @@ public class ArticleXMLParser {
             InputSource inputSource = new InputSource(reader);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            //Convert CDATA nodes to text nodes
+            dbf.setCoalescing(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(inputSource);
             doc.getDocumentElement().normalize();
@@ -69,34 +71,18 @@ public class ArticleXMLParser {
         String link = null;
         ArticleEntry.ArticleSource source;
 
-        NodeList itemElements = item.getChildNodes();
+        Element itemElement = (Element) item;
 
-        for (int i=0; i < itemElements.getLength(); i++) {
-            Node node = itemElements.item(i);
+        title = getValue(itemElement, "title");
+        description = getValue(itemElement, "description");
+        date = getValue(itemElement, "pubDate");
+        link = getValue(itemElement, "link");
 
-            if (node.getNodeName().equals("pubDate")) {
-                Node value = node.getFirstChild();
-                date = value.getNodeValue();
-            }
-
-            if (node.getNodeName().equals("title")) {
-                Node value = node.getFirstChild();
-                title = value.getNodeValue();
-            }
-
-            if (node.getNodeName().equals("description")) {
-                Node value = node.getFirstChild();
-                description = value.getNodeValue();
-            }
-
-            if (node.getNodeName().equals("link")) {
-                Node value = node.getFirstChild();
-                link = value.getNodeValue();
-            }
-
-            if (node.getNodeName().equals("enclosure")) {
-                imageUrl = node.getAttributes().getNamedItem("url").getNodeValue();
-            }
+        //Special parsing for imageUrl
+        NodeList nodes = ((Element) item).getElementsByTagName("enclosure");
+        Node imageUrlElement = nodes.item(0);
+        if (imageUrlElement != null) {
+            imageUrl = imageUrlElement.getAttributes().getNamedItem("url").getNodeValue();
         }
 
         source = ArticleEntry.ArticleSource.UNKNOWN;
@@ -111,13 +97,32 @@ public class ArticleXMLParser {
             }
         }
 
-        Log.d(LOG_TAG, "New item has been parsed");
-        Log.d(LOG_TAG, "Date: " + date);
-        Log.d(LOG_TAG, "Title: " + title);
-        Log.d(LOG_TAG, "Description: " + description);
-        Log.d(LOG_TAG, "Source: " + source.toString());
-        Log.d(LOG_TAG, "ImageUrl: " + imageUrl);
-
         return new ArticleEntry(date, source, title, description, imageUrl);
+    }
+
+    static public String getValue(Element item, String str) {
+        NodeList n = item.getElementsByTagName(str);
+        return getElementValue(n.item(0));
+    }
+
+    static public final String getElementValue( Node elem ) {
+        try {
+            Node child;
+            if( elem != null){
+                if (elem.hasChildNodes()){
+                    for( child = elem.getFirstChild(); child != null; child = child.getNextSibling() ){
+                        if( child.getNodeType() == Node.CDATA_SECTION_NODE
+                                || child.getNodeType() == Node.TEXT_NODE )
+                        {
+                            return child.getNodeValue().trim();
+                        }
+                    }
+                }
+            }
+            return "";
+        } catch (DOMException e) {
+            //Logger.logError(e);
+            return "";
+        }
     }
 }
