@@ -16,10 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
 
 public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, NewsFeedLoadedListener {
     private SwipeRefreshLayout srlContainer;

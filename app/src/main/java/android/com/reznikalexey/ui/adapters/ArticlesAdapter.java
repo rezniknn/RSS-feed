@@ -53,8 +53,11 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
                     ivImage.setImageBitmap(entry.getImageBitmap());
                     rlLoadingPanel.setVisibility(View.GONE);
                 } else {
-                    ivImage.setImageResource(R.drawable.img_placeholder);
-                    rlLoadingPanel.setVisibility(View.VISIBLE);
+                    //ImageUrl is not null => picture must be loading at the moment
+                    if (entry.getImageUrl() != null) {
+                        ivImage.setImageResource(R.drawable.img_placeholder);
+                        rlLoadingPanel.setVisibility(View.VISIBLE);
+                    }
                 }
             }
 

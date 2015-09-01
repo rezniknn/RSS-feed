@@ -9,10 +9,11 @@ import android.util.Log;
 /**
  * Created by alexeyreznik on 31/08/15.
  */
-public class ArticleEntry {
+public class ArticleEntry{
     public static final String LOG_TAG = "ArticleEntry";
 
     private ArticleSource source;
+    private String date;
     private String title;
     private String description;
     private String imageUrl;
@@ -23,7 +24,8 @@ public class ArticleEntry {
 
     public enum ArticleSource {
         LENTA ("lenta.ru"),
-        GAZETA ("gazeta.ru");
+        GAZETA ("gazeta.ru"),
+        UNKNOWN ("source is unknown");
 
         private final String textDescription;
 
@@ -36,13 +38,23 @@ public class ArticleEntry {
         }
     }
 
-    public ArticleEntry(ArticleSource source, String title, String description, String imageUrl) {
+    public ArticleEntry(String date, ArticleSource source, String title, String description, String imageUrl) {
+        this.date = date;
+
         this.source = source;
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
         this.detailedView = false;
 
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public ArticleSource getSource() {
