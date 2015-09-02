@@ -12,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by alexeyreznik on 31/08/15.
@@ -43,6 +45,7 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
         public TextView tvSource;
         public TextView tvDate;
         public ImageView ivImage;
+        public ProgressBar pbProgress;
     }
 
     @Override
@@ -58,10 +61,12 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
                     .findViewById(R.id.tv_description);
             TextView tvSource = (TextView) convertView
                     .findViewById(R.id.tv_source);
-            final TextView tvDate = (TextView) convertView
+            TextView tvDate = (TextView) convertView
                     .findViewById(R.id.tv_date);
             ImageView ivImage = (ImageView) convertView
                     .findViewById(R.id.iv_image);
+            ProgressBar pbProgress = (ProgressBar) convertView
+                    .findViewById(R.id.pb_loadingPanel);
 
             holder = new ViewHolder();
             holder.tvTitle = tvTitle;
@@ -69,6 +74,7 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
             holder.tvSource = tvSource;
             holder.tvDate = tvDate;
             holder.ivImage = ivImage;
+            holder.pbProgress = pbProgress;
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -117,10 +123,11 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
         }
 
         if (article.getImageUrl() != null) {
+            holder.ivImage.setVisibility(View.VISIBLE);
             holder.ivImage.setTag(article.getImageUrl());
-            BitmapManager.getInstance().loadBitmap(article.getImageUrl(), holder.ivImage, Const.IMG_WIDTH, Const.IMG_HEIGHT);
+            BitmapManager.getInstance().loadBitmap(article.getImageUrl(), holder.ivImage, holder.pbProgress, Const.IMG_WIDTH, Const.IMG_HEIGHT);
         } else {
-            holder.ivImage.setImageBitmap(placeholder);
+            holder.ivImage.setVisibility(View.GONE);
         }
         return convertView;
     }

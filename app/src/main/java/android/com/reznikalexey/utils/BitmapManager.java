@@ -4,8 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +56,7 @@ public class BitmapManager {
         return null;
     }
 
-    public void queueJob(final String url, final ImageView imageView,
+    public void queueJob(final String url, final ImageView imageView, final ProgressBar pbProgress,
                          final int width, final int height) {
         final Handler handler = new Handler() {
             @Override
@@ -64,8 +65,10 @@ public class BitmapManager {
                 if (tag != null && tag.equals(url)) {
                     if (msg.obj != null) {
                         imageView.setImageBitmap((Bitmap) msg.obj);
+                        pbProgress.setVisibility(View.GONE);
                     } else {
                         imageView.setImageBitmap(placeholder);
+                        pbProgress.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -82,16 +85,18 @@ public class BitmapManager {
         });
     }
 
-    public void loadBitmap(final String url, final ImageView imageView,
+    public void loadBitmap(final String url, final ImageView imageView, ProgressBar pbProgress,
                            final int width, final int height) {
         imageViews.put(imageView, url);
         Bitmap bitmap = getBitmapFromCache(url);
 
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
+            pbProgress.setVisibility(View.GONE);
         } else {
             imageView.setImageBitmap(placeholder);
-            queueJob(url, imageView, width, height);
+            pbProgress.setVisibility(View.VISIBLE);
+            queueJob(url, imageView, pbProgress, width, height);
         }
     }
 
