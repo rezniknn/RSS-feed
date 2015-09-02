@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by alexeyreznik on 31/08/15.
@@ -116,10 +117,10 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
             try {
                 //Reformat Date to a more human readable format
                 String dateString = article.getDate();
-                SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+                SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
                 Date date = format.parse(dateString);
 
-                SimpleDateFormat newFormat = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat newFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
                 holder.tvDate.setText(newFormat.format(date));
             } catch (ParseException e) {
                 e.printStackTrace();

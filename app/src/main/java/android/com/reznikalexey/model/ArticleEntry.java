@@ -3,6 +3,7 @@ package android.com.reznikalexey.model;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by alexeyreznik on 31/08/15.
@@ -20,7 +21,7 @@ public class ArticleEntry implements Comparable {
     @Override
     public int compareTo(Object another) {
         if (this.getDate() != null && ((ArticleEntry) another).getDate() != null) {
-            SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+            SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
             try {
                 //Convert String to Date object
                 Date thisDate = format.parse(this.date);

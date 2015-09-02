@@ -121,7 +121,7 @@ public class BitmapManager {
     }
 
     //Download Bitmap from URL and scale it
-    private Bitmap downloadBitmap(String url, int width, int height) {
+    public Bitmap downloadBitmap(String url, int width, int height) {
         try {
             Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(
                     url).getContent());

@@ -55,7 +55,8 @@ public class NewsFeedActivity extends RoboActivity implements SwipeRefreshLayout
     @Override
     public void onRefresh() {
         dialog = new ProgressDialog(this);
-        dialog.setMessage("Loading feed...");
+        dialog.setMessage(getResources().getString(R.string.loading));
+        dialog.setCancelable(false);
         dialog.show();
         new LoadNewsFeedTask(this, this).execute(newsSources);
         srlContainer.setRefreshing(false);

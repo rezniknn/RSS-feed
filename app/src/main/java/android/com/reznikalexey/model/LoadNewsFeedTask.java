@@ -1,6 +1,7 @@
 package android.com.reznikalexey.model;
 
 import android.app.Activity;
+import android.com.reznikalexey.R;
 import android.com.reznikalexey.listeners.NewsFeedLoadedListener;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -37,11 +38,29 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
 
     @Override
     protected ArrayList<ArticleEntry> doInBackground(String[]... params) {
+        return loadArticleEntries(params[0]);
+
+    }
+
+    @Override
+    protected void onPostExecute(ArrayList<ArticleEntry> articleEntries) {
+        Log.d(LOG_TAG, "Finished loading RSS entries. N of entries loaded: " + this.articleEntries.size());
+
+        //Sort news articles
+        Collections.sort(articleEntries);
+
+        //Notify listener that articles has been loaded. Pass array of articles as an argument
+        listener.onFeedLoaded(articleEntries);
+        super.onPostExecute(articleEntries);
+    }
+
+    public ArrayList<ArticleEntry> loadArticleEntries(String[] param) {
         //Iterate over each news source
-        for (String source : params[0]) {
+        for (String source : param) {
             try {
                 URL url = new URL(source);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
                 //To avoid being redirected to mobile web-page set user-agent property to desktop browser
                 httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36");
                 httpURLConnection.connect();
@@ -49,6 +68,7 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
                 if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     InputStream inputStream = httpURLConnection.getInputStream();
 
+                    //Gazeta RSS feed requires special encoding
                     if (source.contains("gazeta")) {
                         articleEntries.addAll(ArticleXMLParser.parse(inputStream, "windows-1251"));
                     } else {
@@ -62,24 +82,12 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onError("Failed to update news feed. Check your network state");
+                        listener.onError(activity.getResources().getString(R.string.network_error));
                     }
                 });
                 e.printStackTrace();
             }
         }
         return articleEntries;
-    }
-
-    @Override
-    protected void onPostExecute(ArrayList<ArticleEntry> articleEntries) {
-        Log.d(LOG_TAG, "Finished loading RSS entries. N of entries loaded: " + this.articleEntries.size());
-
-        //Sort news articles
-        Collections.sort(articleEntries);
-
-        //Notify listener that articles has been loaded. Pass array of articles as an argument
-        listener.onFeedLoaded(articleEntries);
-        super.onPostExecute(articleEntries);
     }
 }
