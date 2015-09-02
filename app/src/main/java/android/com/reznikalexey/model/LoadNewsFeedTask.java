@@ -60,15 +60,16 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
                 e.printStackTrace();
             }
         }
-        //Sort news articles
-        Collections.sort(articleEntries);
-
         return articleEntries;
     }
 
     @Override
     protected void onPostExecute(ArrayList<ArticleEntry> articleEntries) {
         Log.d(LOG_TAG, "Finished loading RSS entries. N of entries loaded: " + this.articleEntries.size());
+
+        //Sort news articles
+        Collections.sort(articleEntries);
+
         //Notify listener that articles has been loaded. Pass array of articles as an argument
         listener.onFeedLoaded(articleEntries);
         super.onPostExecute(articleEntries);

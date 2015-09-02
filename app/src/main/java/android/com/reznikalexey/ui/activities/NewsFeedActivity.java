@@ -6,13 +6,14 @@ import android.com.reznikalexey.listeners.NewsFeedLoadedListener;
 import android.com.reznikalexey.model.ArticleEntry;
 import android.com.reznikalexey.model.LoadNewsFeedTask;
 import android.com.reznikalexey.ui.adapters.ArticlesAdapter;
+import android.com.reznikalexey.utils.BitmapManager;
+import android.com.reznikalexey.utils.Const;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
 
     public static final String LOG_TAG = "NewsFeedActivity";
     String[] newsSources;
-    private ArticlesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,9 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
         //Get the list of URLs from res file
         newsSources = getResources().getStringArray(R.array.array_sources_urls);
 
+        //Init BitmapManager with placeholder image
+        Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.drawable.img_placeholder);
+        BitmapManager.getInstance().setPlaceholder(Bitmap.createScaledBitmap(placeholder, Const.IMG_WIDTH, Const.IMG_HEIGHT, false));
         //Refresh News Feed upon app launch
         onRefresh();
     }
@@ -44,19 +47,7 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
     private void initViews() {
         srlContainer = (SwipeRefreshLayout) findViewById(R.id.srl_main_container);
         srlContainer.setOnRefreshListener(this);
-        adapter = new ArticlesAdapter(this, R.layout.article_entry_layout);
         lvContainer = (ListView) findViewById(R.id.lv_container);
-        lvContainer.setAdapter(adapter);
-        lvContainer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Switch between detailed/non-detailed view for the entry
-                adapter.getItem(position).switchDetailedView();
-
-                //Notify adapter that views need to be updated
-                adapter.notifyDataSetChanged();
-            }
-        });
     }
 
     @Override
@@ -92,20 +83,12 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
 
     /***
      * The callback is triggered when all the articles from all sources have been loaded, parsed and sorted
+     *
      * @param articleEntries ArrayList containing news articles from all sources
      */
     @Override
     public void onFeedLoaded(ArrayList<ArticleEntry> articleEntries) {
-        if (adapter != null) {
-            adapter.clear();
-            for (ArticleEntry entry : articleEntries) {
-                adapter.add(entry);
-                //Initiate image download if imageUrl is present for each news article
-                entry.loadImage(adapter);
-            }
-            adapter.notifyDataSetChanged();
-        } else {
-            Log.e(LOG_TAG, "Adapter is null");
-        }
+        ArticlesAdapter adapter = new ArticlesAdapter(this, R.layout.article_entry_layout, articleEntries);
+        lvContainer.setAdapter(adapter);
     }
 }
