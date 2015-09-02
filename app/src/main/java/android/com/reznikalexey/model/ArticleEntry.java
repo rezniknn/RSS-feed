@@ -16,8 +16,6 @@ public class ArticleEntry implements Comparable {
     private String description;
     private String imageUrl;
 
-    private boolean detailedView;
-
     //Defines how articles are sorted.
     @Override
     public int compareTo(Object another) {
@@ -105,13 +103,5 @@ public class ArticleEntry implements Comparable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public boolean isDetailedView() {
-        return detailedView;
-    }
-
-    public void setDetailedView(boolean detailedView) {
-        this.detailedView = detailedView;
     }
 }

@@ -1,6 +1,5 @@
 package android.com.reznikalexey.ui.activities;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.com.reznikalexey.R;
 import android.com.reznikalexey.listeners.NewsFeedLoadedListener;
@@ -10,63 +9,44 @@ import android.com.reznikalexey.ui.adapters.ArticlesAdapter;
 import android.com.reznikalexey.utils.Const;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
+import roboguice.activity.RoboActivity;
+import roboguice.inject.ContentView;
+import roboguice.inject.InjectResource;
+import roboguice.inject.InjectView;
 
-public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, NewsFeedLoadedListener {
+@ContentView(R.layout.activity_news_feed)
+public class NewsFeedActivity extends RoboActivity implements SwipeRefreshLayout.OnRefreshListener, NewsFeedLoadedListener {
+    @InjectView(R.id.srl_main_container)
     private SwipeRefreshLayout srlContainer;
+    @InjectView(R.id.lv_container)
     private ListView lvContainer;
-    private ProgressDialog dialog;
+
+    @InjectResource(R.array.array_sources_urls)
     String[] newsSources;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_feed);
         initViews();
-
-        //Get the list of URLs from res file
-        newsSources = getResources().getStringArray(R.array.array_sources_urls);
 
         //Refresh News Feed upon app launch
         onRefresh();
     }
 
     /***
-     * Initialise UI elements, set callback listeners
+     * Configure UI elements
      */
     private void initViews() {
-        srlContainer = (SwipeRefreshLayout) findViewById(R.id.srl_main_container);
+        //Set refresh listener for SwipeRefreshLayout
         srlContainer.setOnRefreshListener(this);
-        lvContainer = (ListView) findViewById(R.id.lv_container);
+
+        //Reduce scrolling speed to avoid concurrency issues with ListView on slow networks
         lvContainer.setFriction(ViewConfiguration.getScrollFriction() * Const.FRICTION_SCALE_FACTOR);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_news_feed, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /***
@@ -77,7 +57,7 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
         dialog = new ProgressDialog(this);
         dialog.setMessage("Loading feed...");
         dialog.show();
-        new LoadNewsFeedTask(this).execute(newsSources);
+        new LoadNewsFeedTask(this, this).execute(newsSources);
         srlContainer.setRefreshing(false);
     }
 
@@ -95,11 +75,16 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
         }
     }
 
+    /***
+     * This callback is triggered when a error has occurred while trying to update the feed
+     * @param message
+     */
     @Override
     public void onError(String message) {
         if (dialog != null) {
             dialog.dismiss();
         }
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        //Display error message to the user
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

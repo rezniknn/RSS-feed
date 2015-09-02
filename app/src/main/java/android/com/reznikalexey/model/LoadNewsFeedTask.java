@@ -1,5 +1,6 @@
 package android.com.reznikalexey.model;
 
+import android.app.Activity;
 import android.com.reznikalexey.listeners.NewsFeedLoadedListener;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -19,10 +20,11 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
     public static final String LOG_TAG = "LoadNewsFeedTask";
 
     ArrayList<ArticleEntry> articleEntries;
+    Activity activity;
     NewsFeedLoadedListener listener;
 
-    public LoadNewsFeedTask(NewsFeedLoadedListener listener) {
-        //Set listener
+    public LoadNewsFeedTask(Activity activity, NewsFeedLoadedListener listener) {
+        this.activity = activity;
         this.listener = listener;
         articleEntries = new ArrayList<ArticleEntry>();
     }
@@ -57,7 +59,12 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
-
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onError("Failed to update news feed. Check your network state");
+                    }
+                });
                 e.printStackTrace();
             }
         }
