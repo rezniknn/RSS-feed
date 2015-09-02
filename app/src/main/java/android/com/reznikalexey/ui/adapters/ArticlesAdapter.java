@@ -19,7 +19,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by alexeyreznik on 31/08/15.
@@ -52,6 +51,8 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
+        final ArticleEntry article = articles.get(position);
+
         if (convertView == null) {
             convertView = inflator.inflate(R.layout.article_entry_layout, null);
 
@@ -76,26 +77,26 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
             holder.ivImage = ivImage;
             holder.pbProgress = pbProgress;
 
+            convertView.setTag(holder);
+
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (tvDescription != null) {
                         if (tvDescription.getVisibility() == View.GONE) {
                             tvDescription.setVisibility(View.VISIBLE);
+                            article.setDetailedView(true);
                         } else {
                             tvDescription.setVisibility(View.GONE);
+                            article.setDetailedView(false);
                         }
                     }
                 }
             });
 
-            convertView.setTag(holder);
-
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
-        ArticleEntry article = articles.get(position);
 
         if (article.getTitle() != null) {
             holder.tvTitle.setText(article.getTitle());
@@ -103,6 +104,11 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
 
         if (article.getDescription() != null) {
             holder.tvDescription.setText(article.getDescription());
+            if (article.isDetailedView()) {
+                holder.tvDescription.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvDescription.setVisibility(View.GONE);
+            }
         }
 
         if (article.getSource() != null) {

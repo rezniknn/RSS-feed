@@ -1,7 +1,5 @@
 package android.com.reznikalexey.model;
 
-import android.graphics.Bitmap;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,7 +7,7 @@ import java.util.Date;
 /**
  * Created by alexeyreznik on 31/08/15.
  */
-public class ArticleEntry implements Comparable{
+public class ArticleEntry implements Comparable {
     public static final String LOG_TAG = "ArticleEntry";
 
     private ArticleSource source;
@@ -18,10 +16,12 @@ public class ArticleEntry implements Comparable{
     private String description;
     private String imageUrl;
 
+    private boolean detailedView;
+
     //Defines how articles are sorted.
     @Override
     public int compareTo(Object another) {
-        if (this.getDate() != null && ((ArticleEntry)another).getDate() != null) {
+        if (this.getDate() != null && ((ArticleEntry) another).getDate() != null) {
             SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
             try {
                 //Convert String to Date object
@@ -44,9 +44,9 @@ public class ArticleEntry implements Comparable{
     }
 
     public enum ArticleSource {
-        LENTA ("lenta.ru"),
-        GAZETA ("gazeta.ru"),
-        UNKNOWN ("source is unknown");
+        LENTA("lenta.ru"),
+        GAZETA("gazeta.ru"),
+        UNKNOWN("source is unknown");
 
         private final String textDescription;
 
@@ -105,5 +105,13 @@ public class ArticleEntry implements Comparable{
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public boolean isDetailedView() {
+        return detailedView;
+    }
+
+    public void setDetailedView(boolean detailedView) {
+        this.detailedView = detailedView;
     }
 }

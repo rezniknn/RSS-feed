@@ -7,4 +7,5 @@ public class Const {
     public static final int NUM_OF_THREADS = 5;
     public static final int IMG_WIDTH = 420;
     public static final int IMG_HEIGHT = 280;
+    public static final float FRICTION_SCALE_FACTOR = 3;
 }

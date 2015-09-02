@@ -1,28 +1,27 @@
 package android.com.reznikalexey.ui.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.com.reznikalexey.R;
 import android.com.reznikalexey.listeners.NewsFeedLoadedListener;
 import android.com.reznikalexey.model.ArticleEntry;
 import android.com.reznikalexey.model.LoadNewsFeedTask;
 import android.com.reznikalexey.ui.adapters.ArticlesAdapter;
-import android.com.reznikalexey.utils.BitmapManager;
 import android.com.reznikalexey.utils.Const;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewConfiguration;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, NewsFeedLoadedListener {
     private SwipeRefreshLayout srlContainer;
     private ListView lvContainer;
-
-    public static final String LOG_TAG = "NewsFeedActivity";
+    private ProgressDialog dialog;
     String[] newsSources;
 
     @Override
@@ -45,6 +44,7 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
         srlContainer = (SwipeRefreshLayout) findViewById(R.id.srl_main_container);
         srlContainer.setOnRefreshListener(this);
         lvContainer = (ListView) findViewById(R.id.lv_container);
+        lvContainer.setFriction(ViewConfiguration.getScrollFriction() * Const.FRICTION_SCALE_FACTOR);
     }
 
     @Override
@@ -74,6 +74,9 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
      */
     @Override
     public void onRefresh() {
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading feed...");
+        dialog.show();
         new LoadNewsFeedTask(this).execute(newsSources);
         srlContainer.setRefreshing(false);
     }
@@ -87,5 +90,16 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
     public void onFeedLoaded(ArrayList<ArticleEntry> articleEntries) {
         ArticlesAdapter adapter = new ArticlesAdapter(this, R.layout.article_entry_layout, articleEntries);
         lvContainer.setAdapter(adapter);
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onError(String message) {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }
