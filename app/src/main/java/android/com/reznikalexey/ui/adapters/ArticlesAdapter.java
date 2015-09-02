@@ -2,7 +2,11 @@ package android.com.reznikalexey.ui.adapters;
 
 import android.com.reznikalexey.R;
 import android.com.reznikalexey.model.ArticleEntry;
+import android.com.reznikalexey.utils.BitmapManager;
+import android.com.reznikalexey.utils.Const;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +25,16 @@ import java.util.List;
 public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
     private List<ArticleEntry> articles;
     private final LayoutInflater inflator;
+    private Bitmap placeholder;
 
     public ArticlesAdapter(Context context, int resource, List<ArticleEntry> articles) {
         super(context, resource, articles);
         this.articles = articles;
         inflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        //Init BitmapManager with placeholder image
+        placeholder = BitmapFactory.decodeResource(context.getResources(), R.drawable.img_placeholder);
+        BitmapManager.getInstance().setPlaceholder(Bitmap.createScaledBitmap(placeholder, Const.IMG_WIDTH, Const.IMG_HEIGHT, false));
     }
 
     private static class ViewHolder {
@@ -74,9 +83,6 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
                 }
             });
 
-            //TODO Temporary
-            ivImage.setVisibility(View.GONE);
-
             convertView.setTag(holder);
 
         } else {
@@ -110,11 +116,12 @@ public class ArticlesAdapter extends ArrayAdapter<ArticleEntry> {
             }
         }
 
-        if (holder.ivImage != null) {
+        if (article.getImageUrl() != null) {
             holder.ivImage.setTag(article.getImageUrl());
-            //BitmapManager.getInstance().loadBitmap(article.getImageUrl(), holder.ivImage, Const.IMG_WIDTH, Const.IMG_HEIGHT);
+            BitmapManager.getInstance().loadBitmap(article.getImageUrl(), holder.ivImage, Const.IMG_WIDTH, Const.IMG_HEIGHT);
+        } else {
+            holder.ivImage.setImageBitmap(placeholder);
         }
-
         return convertView;
     }
 }

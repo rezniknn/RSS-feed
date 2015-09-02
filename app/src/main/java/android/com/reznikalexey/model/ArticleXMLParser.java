@@ -64,12 +64,12 @@ public class ArticleXMLParser {
     }
 
     private static ArticleEntry parseItem(Node item) {
-        String date = null;
-        String title = null;
-        String description = null;
+        String date;
+        String title;
+        String description;
+        String link;
+        ArticleEntry.ArticleSource source = ArticleEntry.ArticleSource.UNKNOWN;
         String imageUrl = null;
-        String link = null;
-        ArticleEntry.ArticleSource source;
 
         Element itemElement = (Element) item;
 
@@ -80,12 +80,12 @@ public class ArticleXMLParser {
 
         //Special parsing for imageUrl
         NodeList nodes = ((Element) item).getElementsByTagName("enclosure");
-        Node imageUrlElement = nodes.item(0);
-        if (imageUrlElement != null) {
-            imageUrl = imageUrlElement.getAttributes().getNamedItem("url").getNodeValue();
+        if (nodes.getLength() != 0) {
+            Node imageUrlElement = nodes.item(0);
+            if (imageUrlElement != null) {
+                imageUrl = imageUrlElement.getAttributes().getNamedItem("url").getNodeValue();
+            }
         }
-
-        source = ArticleEntry.ArticleSource.UNKNOWN;
 
         if (link != null) {
             if (link.contains("lenta")) {
@@ -119,10 +119,10 @@ public class ArticleXMLParser {
                     }
                 }
             }
-            return "";
+            return null;
         } catch (DOMException e) {
             //Logger.logError(e);
-            return "";
+            return null;
         }
     }
 }

@@ -34,9 +34,6 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
         //Get the list of URLs from res file
         newsSources = getResources().getStringArray(R.array.array_sources_urls);
 
-        //Init BitmapManager with placeholder image
-        Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.drawable.img_placeholder);
-        BitmapManager.getInstance().setPlaceholder(Bitmap.createScaledBitmap(placeholder, Const.IMG_WIDTH, Const.IMG_HEIGHT, false));
         //Refresh News Feed upon app launch
         onRefresh();
     }
