@@ -1,8 +1,5 @@
 package android.com.reznikalexey.model;
 
-import android.util.Log;
-
-import org.w3c.dom.CharacterData;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,10 +23,8 @@ import javax.xml.parsers.ParserConfigurationException;
  * Created by alexeyreznik on 01/09/15.
  */
 public class ArticleXMLParser {
-    public static final String LOG_TAG = "ArticleXMLParser";
-    private static final String ns = null;
 
-
+    //Parse XML from InputStream given a particular encoding
     public static List<ArticleEntry> parse(InputStream inputStream, String encoding) {
         ArrayList<ArticleEntry> entries = new ArrayList<ArticleEntry>();
 
@@ -44,13 +39,13 @@ public class ArticleXMLParser {
             Document doc = db.parse(inputSource);
             doc.getDocumentElement().normalize();
 
+            //Locate all <item> elements
             NodeList nodeList = doc.getElementsByTagName("item");
 
-            for (int i=0; i < nodeList.getLength(); i++) {
+            //Parse each <item> element separately. Add ArticleEntry's to the list
+            for (int i = 0; i < nodeList.getLength(); i++) {
                 entries.add(parseItem(nodeList.item(i)));
             }
-
-            Log.d(LOG_TAG, "Number of items found in XML: " + nodeList.getLength());
 
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -60,9 +55,11 @@ public class ArticleXMLParser {
             e.printStackTrace();
         }
 
+        //Return a list of ArticleEntries
         return entries;
     }
 
+    //Parse <item> element
     private static ArticleEntry parseItem(Node item) {
         String date;
         String title;
@@ -87,6 +84,7 @@ public class ArticleXMLParser {
             }
         }
 
+        //Define Source of the article based on the source Link
         if (link != null) {
             if (link.contains("lenta")) {
                 source = ArticleEntry.ArticleSource.LENTA;
@@ -97,23 +95,24 @@ public class ArticleXMLParser {
             }
         }
 
+        //Create and return a new instance of ArticleEntry
         return new ArticleEntry(date, source, title, description, imageUrl);
     }
 
+    //Get text value within a particular XML element
     static public String getValue(Element item, String str) {
         NodeList n = item.getElementsByTagName(str);
         return getElementValue(n.item(0));
     }
 
-    static public final String getElementValue( Node elem ) {
+    static public final String getElementValue(Node elem) {
         try {
             Node child;
-            if( elem != null){
-                if (elem.hasChildNodes()){
-                    for( child = elem.getFirstChild(); child != null; child = child.getNextSibling() ){
-                        if( child.getNodeType() == Node.CDATA_SECTION_NODE
-                                || child.getNodeType() == Node.TEXT_NODE )
-                        {
+            if (elem != null) {
+                if (elem.hasChildNodes()) {
+                    for (child = elem.getFirstChild(); child != null; child = child.getNextSibling()) {
+                        if (child.getNodeType() == Node.CDATA_SECTION_NODE
+                                || child.getNodeType() == Node.TEXT_NODE) {
                             return child.getNodeValue().trim();
                         }
                     }
@@ -121,7 +120,6 @@ public class ArticleXMLParser {
             }
             return null;
         } catch (DOMException e) {
-            //Logger.logError(e);
             return null;
         }
     }

@@ -3,6 +3,7 @@ package android.com.reznikalexey.model;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by alexeyreznik on 31/08/15.
@@ -16,13 +17,11 @@ public class ArticleEntry implements Comparable {
     private String description;
     private String imageUrl;
 
-    private boolean detailedView;
-
     //Defines how articles are sorted.
     @Override
     public int compareTo(Object another) {
         if (this.getDate() != null && ((ArticleEntry) another).getDate() != null) {
-            SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+            SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
             try {
                 //Convert String to Date object
                 Date thisDate = format.parse(this.date);
@@ -105,13 +104,5 @@ public class ArticleEntry implements Comparable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public boolean isDetailedView() {
-        return detailedView;
-    }
-
-    public void setDetailedView(boolean detailedView) {
-        this.detailedView = detailedView;
     }
 }
