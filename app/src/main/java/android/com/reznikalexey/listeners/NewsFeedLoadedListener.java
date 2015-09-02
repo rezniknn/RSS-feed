@@ -9,4 +9,5 @@ import java.util.ArrayList;
  */
 public interface NewsFeedLoadedListener {
     public abstract void onFeedLoaded(ArrayList<ArticleEntry> articleEntries);
+    public abstract void onError(String message);
 }

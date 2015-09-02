@@ -15,7 +15,7 @@ import java.util.Collections;
 /**
  * Created by alexeyreznik on 31/08/15.
  */
-public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<ArticleEntry>>{
+public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<ArticleEntry>> {
     public static final String LOG_TAG = "LoadNewsFeedTask";
 
     ArrayList<ArticleEntry> articleEntries;
@@ -26,6 +26,7 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
         this.listener = listener;
         articleEntries = new ArrayList<ArticleEntry>();
     }
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -46,7 +47,6 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
                 if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     InputStream inputStream = httpURLConnection.getInputStream();
 
-                    //TODO think of something better
                     if (source.contains("gazeta")) {
                         articleEntries.addAll(ArticleXMLParser.parse(inputStream, "windows-1251"));
                     } else {
@@ -57,18 +57,20 @@ public class LoadNewsFeedTask extends AsyncTask<String[], Void, ArrayList<Articl
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+
                 e.printStackTrace();
             }
         }
-        //Sort news articles
-        Collections.sort(articleEntries);
-
         return articleEntries;
     }
 
     @Override
     protected void onPostExecute(ArrayList<ArticleEntry> articleEntries) {
         Log.d(LOG_TAG, "Finished loading RSS entries. N of entries loaded: " + this.articleEntries.size());
+
+        //Sort news articles
+        Collections.sort(articleEntries);
+
         //Notify listener that articles has been loaded. Pass array of articles as an argument
         listener.onFeedLoaded(articleEntries);
         super.onPostExecute(articleEntries);

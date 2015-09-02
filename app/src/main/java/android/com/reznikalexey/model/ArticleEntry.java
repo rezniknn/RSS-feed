@@ -1,11 +1,5 @@
 package android.com.reznikalexey.model;
 
-import android.com.reznikalexey.ui.adapters.ArticlesAdapter;
-import android.com.reznikalexey.utils.BitmapUtils;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.util.Log;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,7 +7,7 @@ import java.util.Date;
 /**
  * Created by alexeyreznik on 31/08/15.
  */
-public class ArticleEntry implements Comparable{
+public class ArticleEntry implements Comparable {
     public static final String LOG_TAG = "ArticleEntry";
 
     private ArticleSource source;
@@ -21,15 +15,13 @@ public class ArticleEntry implements Comparable{
     private String title;
     private String description;
     private String imageUrl;
-    private Bitmap imageBitmap;
 
     private boolean detailedView;
-    private ArticlesAdapter adapter;
 
     //Defines how articles are sorted.
     @Override
     public int compareTo(Object another) {
-        if (this.getDate() != null && ((ArticleEntry)another).getDate() != null) {
+        if (this.getDate() != null && ((ArticleEntry) another).getDate() != null) {
             SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
             try {
                 //Convert String to Date object
@@ -52,9 +44,9 @@ public class ArticleEntry implements Comparable{
     }
 
     public enum ArticleSource {
-        LENTA ("lenta.ru"),
-        GAZETA ("gazeta.ru"),
-        UNKNOWN ("source is unknown");
+        LENTA("lenta.ru"),
+        GAZETA("gazeta.ru"),
+        UNKNOWN("source is unknown");
 
         private final String textDescription;
 
@@ -69,13 +61,10 @@ public class ArticleEntry implements Comparable{
 
     public ArticleEntry(String date, ArticleSource source, String title, String description, String imageUrl) {
         this.date = date;
-
         this.source = source;
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
-        this.detailedView = false;
-
     }
 
     public String getDate() {
@@ -118,64 +107,11 @@ public class ArticleEntry implements Comparable{
         this.imageUrl = imageUrl;
     }
 
-    public Bitmap getImageBitmap() {
-        return imageBitmap;
-    }
-
-    public void setImageBitmap(Bitmap imageBitmap) {
-        this.imageBitmap = imageBitmap;
-    }
-
-    public ArticlesAdapter getAdapter() {
-        return adapter;
-    }
-
-    public void setAdapter(ArticlesAdapter adapter) {
-        this.adapter = adapter;
-    }
-
     public boolean isDetailedView() {
         return detailedView;
     }
 
-    public void switchDetailedView() {
-        if (detailedView) {
-            detailedView = false;
-        } else {
-            detailedView = true;
-        }
-    }
-
-    public void loadImage(ArticlesAdapter adapter) {
-        this.adapter = adapter;
-        if (imageUrl != null && !imageUrl.equals("")) {
-            new ImageLoadTask().execute(imageUrl);
-        }
-    }
-
-    private class ImageLoadTask extends AsyncTask<String, String, Bitmap> {
-
-        protected Bitmap doInBackground(String... param) {
-            try {
-                //Load Bitmap from the network
-                Bitmap b = BitmapUtils.loadBitmapFromUrl(param[0]);
-                return b;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        protected void onPostExecute(Bitmap image) {
-            if (image != null) {
-                imageBitmap = image;
-                if (adapter != null) {
-                    //Notify the adapter, update the UI
-                    adapter.notifyDataSetChanged();
-                }
-            } else {
-                Log.e(LOG_TAG, "Failed to load image for " + title);
-            }
-        }
+    public void setDetailedView(boolean detailedView) {
+        this.detailedView = detailedView;
     }
 }

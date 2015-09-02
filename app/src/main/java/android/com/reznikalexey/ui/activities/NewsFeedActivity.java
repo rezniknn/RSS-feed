@@ -1,29 +1,28 @@
 package android.com.reznikalexey.ui.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.com.reznikalexey.R;
 import android.com.reznikalexey.listeners.NewsFeedLoadedListener;
 import android.com.reznikalexey.model.ArticleEntry;
 import android.com.reznikalexey.model.LoadNewsFeedTask;
 import android.com.reznikalexey.ui.adapters.ArticlesAdapter;
+import android.com.reznikalexey.utils.Const;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
+import android.view.ViewConfiguration;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, NewsFeedLoadedListener {
     private SwipeRefreshLayout srlContainer;
     private ListView lvContainer;
-
-    public static final String LOG_TAG = "NewsFeedActivity";
+    private ProgressDialog dialog;
     String[] newsSources;
-    private ArticlesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,19 +43,8 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
     private void initViews() {
         srlContainer = (SwipeRefreshLayout) findViewById(R.id.srl_main_container);
         srlContainer.setOnRefreshListener(this);
-        adapter = new ArticlesAdapter(this, R.layout.article_entry_layout);
         lvContainer = (ListView) findViewById(R.id.lv_container);
-        lvContainer.setAdapter(adapter);
-        lvContainer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Switch between detailed/non-detailed view for the entry
-                adapter.getItem(position).switchDetailedView();
-
-                //Notify adapter that views need to be updated
-                adapter.notifyDataSetChanged();
-            }
-        });
+        lvContainer.setFriction(ViewConfiguration.getScrollFriction() * Const.FRICTION_SCALE_FACTOR);
     }
 
     @Override
@@ -86,26 +74,32 @@ public class NewsFeedActivity extends Activity implements SwipeRefreshLayout.OnR
      */
     @Override
     public void onRefresh() {
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading feed...");
+        dialog.show();
         new LoadNewsFeedTask(this).execute(newsSources);
         srlContainer.setRefreshing(false);
     }
 
     /***
      * The callback is triggered when all the articles from all sources have been loaded, parsed and sorted
+     *
      * @param articleEntries ArrayList containing news articles from all sources
      */
     @Override
     public void onFeedLoaded(ArrayList<ArticleEntry> articleEntries) {
-        if (adapter != null) {
-            adapter.clear();
-            for (ArticleEntry entry : articleEntries) {
-                adapter.add(entry);
-                //Initiate image download if imageUrl is present for each news article
-                entry.loadImage(adapter);
-            }
-            adapter.notifyDataSetChanged();
-        } else {
-            Log.e(LOG_TAG, "Adapter is null");
+        ArticlesAdapter adapter = new ArticlesAdapter(this, R.layout.article_entry_layout, articleEntries);
+        lvContainer.setAdapter(adapter);
+        if (dialog != null) {
+            dialog.dismiss();
         }
+    }
+
+    @Override
+    public void onError(String message) {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }
